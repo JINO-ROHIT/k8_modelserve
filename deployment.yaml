@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-heart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-heart
+  template:
+    metadata:
+      labels:
+        app: fastapi-heart
+    spec:
+      containers:
+      - name: fastapi-heart
+        image: jinorohit/fastapi_heartpreds:v1
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
