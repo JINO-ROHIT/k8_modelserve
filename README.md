@@ -34,39 +34,46 @@ This project demonstrates the deployment of a Scikit-learn model in Kubernetes u
 ## Usage
 1. You can use the FASTAPI Swagger to test the /predict and the /result endpoint.
 2. Use curl to send a post request.
-   - ```curl -X 'POST' \
-  'http://127.0.0.1:63736/predict' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "Age": 0,
-  "Sex": 0,
-  "ChestPainType": 0,
-  "RestingBP": 0,
-  "Cholesterol": 0,
-  "FastingBS": 0,
-  "RestingECG": 0,
-  "MaxHR": 0,
-  "ExerciseAngina": 0,
-  "Oldpeak": 0,
-  "ST_Slope": 0
-  }```
+   - ```curl
+     curl -X 'POST' \
+     'http://127.0.0.1:63736/predict' \
+     -H 'accept: application/json' \
+     -H 'Content-Type: application/json' \
+     -d '{
+     "Age": 0,
+     "Sex": 0,
+     "ChestPainType": 0,
+     "RestingBP": 0,
+     "Cholesterol": 0,
+     "FastingBS": 0,
+     "RestingECG": 0,
+     "MaxHR": 0,
+     "ExerciseAngina": 0,
+     "Oldpeak": 0,
+     "ST_Slope": 0
+     }```
 
   Server response will be something like this:
-  '''{
+  ```json 
+  {
   "status": "pending",
   "job_id": "<job_id>"
-  }'''
+  }
+  ```
 
   Now use the job id to the /result endpoint
+  ```curl
    - curl -X 'GET' \
   'http://127.0.0.1:63736/result/7aec3773-4c22-4ac1-86ba-765af81f39f4' \
   -H 'accept: application/json'
+  ```
 
   Sever response will be something like this:
+  ```json
   {
   "job_id": "<job_id>",
   "prediction": "1",
   "elapsed_time": "0.059065818786621094"
  }
+ ```
   
