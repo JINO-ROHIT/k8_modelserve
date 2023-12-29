@@ -29,7 +29,7 @@ app = FastAPI()
 mongo_username = os.environ['MONGO_DB_USER']
 mongo_password = os.environ['MONGO_DB_USER']
 
-print(mongo_username, mongo_password)
+#print(mongo_username, mongo_password)
 
 @app.on_event("startup")
 async def startup_event():
