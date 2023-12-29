@@ -3,10 +3,6 @@
 ## Overview
 This project demonstrates the deployment of a Scikit-learn model in Kubernetes using FastAPI as the backend. The API supports asynchronous processing, allowing concurrent users to effectively utilize its capabilities. The API behaves as a job queue, enabling efficient handling of multiple requests. After the job is done, results are written to a MongoDB database, and they can be retrieved later using the unique job ID.
 
-## Prerequisites
-• Make sure minikube is installed .
-
-
 ## Getting Started
 
 1. Start Minikube:
@@ -38,7 +34,7 @@ This project demonstrates the deployment of a Scikit-learn model in Kubernetes u
 ## Usage
 1. You can use the FASTAPI Swagger to test the /predict and the /result endpoint.
 2. Use curl to send a post request.
-   - '''curl -X 'POST' \
+   - ```curl -X 'POST' \
   'http://127.0.0.1:63736/predict' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
@@ -54,7 +50,7 @@ This project demonstrates the deployment of a Scikit-learn model in Kubernetes u
   "ExerciseAngina": 0,
   "Oldpeak": 0,
   "ST_Slope": 0
-  }'''
+  }```
 
   Server response will be something like this:
   '''{
