@@ -64,7 +64,7 @@ This project demonstrates the deployment of a Scikit-learn model in Kubernetes u
   Now use the job id to the /result endpoint
   ```curl
    - curl -X 'GET' \
-  'http://127.0.0.1:63736/result/7aec3773-4c22-4ac1-86ba-765af81f39f4' \
+  'http://127.0.0.1:63736/result/<job_id>' \
   -H 'accept: application/json'
   ```
 
