@@ -1,42 +1,55 @@
-from fastapi import FastAPI, BackgroundTasks, HTTPException
-import joblib
-from fastapi.responses import JSONResponse
-import uuid
-import time 
-
 import logging
-logging.basicConfig(level=logging.INFO)
-
 import os
 import sys
+import time
+import uuid
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, BackgroundTasks, HTTPException
+from pymongo import MongoClient
+import joblib
+
+from schemas import InputData
+
+
+load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+
 models_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'model')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(models_path)
 
-from schemas import InputData
-
 model = None
+mongo_client = None
+job_statuses_collection = None
 
 app = FastAPI()
 
+mongo_username = os.environ['MONGO_DB_USER']
+mongo_password = os.environ['MONGO_DB_USER']
+
+print(mongo_username, mongo_password)
+
 @app.on_event("startup")
 async def startup_event():
-    global model
+    global model, mongo_client, job_statuses_collection
     model = joblib.load(f"{models_path}/ada_classifier.pkl")
+    logging.info("The model has been initialized")
 
+    mongo_client = MongoClient(f"mongodb://{mongo_username}:{mongo_password}@mymongo:27017")
+    job_statuses_collection = mongo_client["predictions_db"]["job_statuses"]
+    logging.info("The database connection is succesful")
 
 def generate_job_id():
     return str(uuid.uuid4())
 
 @app.get("/result/{job_id}")
 async def get_result(job_id: str):
-    if job_id not in job_statuses:
+    result = job_statuses_collection.find_one({"job_id": job_id}, {"_id": 0})
+    if result is None:
         raise HTTPException(status_code=404, detail="Job not found")
-    #logging.info(job_statuses[job_id])
-    return job_statuses[job_id]
-
-
-job_statuses = {}
+    return result
 
 def inference(job_id: str, input_data: InputData, start_time: time):
     try:
@@ -46,11 +59,13 @@ def inference(job_id: str, input_data: InputData, start_time: time):
         elapsed_time = time.time() - start_time
 
         logging.info(f"The model prediction for job {job_id} is {prediction}. Time taken: {elapsed_time} seconds")
-        job_statuses[job_id] = {"prediction": str(prediction[0]), "elapsed_time": str(elapsed_time)}
+        job_statuses_collection.insert_one({
+            "job_id": job_id,
+            "prediction": str(prediction[0]),
+            "elapsed_time": str(elapsed_time)
+        })
     except Exception as e:
         logging.error(f"Error in inference for job {job_id}: {e}")
-        job_statuses[job_id] = {"error": str(e)}
-
 
 @app.post("/predict")
 async def predict(input_data: InputData, background_tasks: BackgroundTasks):
